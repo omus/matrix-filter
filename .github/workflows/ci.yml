@@ -9,6 +9,33 @@ on:
 permissions:
   contents: read
 
+.matrix: &matrix
+  pkg:
+    - name: Example
+      repo: https://github.com/JuliaLang/Example.jl
+  version:
+    - "1.6"
+    - "1"
+  os:
+    - ubuntu-latest
+    - macos-latest-large
+    - macos-latest-xlarge  # Apple silicon: https://github.blog/2023-10-02-introducing-the-new-apple-silicon-powered-m1-macos-larger-runner-for-github-actions/
+  arch:
+    - x86
+    - x64
+    - aarch64
+  exclude:
+    - os: ubuntu-latest
+      arch: aarch64
+    - os: macos-latest-large
+      arch: x86
+    - os: macos-latest-large
+      arch: aarch64
+    - os: macos-latest-xlarge
+      arch: x86
+    - os: macos-latest-xlarge
+      arch: x64
+
 jobs:
   test-typescript:
     name: TypeScript Tests
@@ -60,3 +87,12 @@ jobs:
       - name: Print Output
         id: output
         run: echo "${{ steps.test-action.outputs.time }}"
+
+  test-concept:
+    name: Test ${{ matrix.pkg.name }} / Julia ${{ matrix.version }} (${{ matrix.os }}, ${{ matrix.arch }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        <<: *matrix
+    steps:
+      - run: exit 0
