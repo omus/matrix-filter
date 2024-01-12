@@ -20,7 +20,7 @@ permissions:
 
 jobs:
   check-dist:
-    name: Check dist/
+    name: Check dist
     runs-on: ubuntu-latest
 
     steps:
@@ -39,7 +39,7 @@ jobs:
         id: install
         run: npm ci
 
-      - name: Build dist/ Directory
+      - name: Build dist Directory
         id: build
         run: npm run bundle
 

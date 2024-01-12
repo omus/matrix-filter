@@ -1,3 +1,30 @@
+matrix:
+  pkg:
+    - name: Example
+      repo: https://github.com/JuliaLang/Example.jl
+  version:
+    - "1.6"
+    - "1"
+  os:
+    - ubuntu-latest
+    - macos-latest-large
+    - macos-latest-xlarge  # Apple silicon: https://github.blog/2023-10-02-introducing-the-new-apple-silicon-powered-m1-macos-larger-runner-for-github-actions/
+  arch:
+    - x86
+    - x64
+    - aarch64
+  exclude:
+    - os: ubuntu-latest
+      arch: aarch64
+    - os: macos-latest-large
+      arch: x86
+    - os: macos-latest-large
+      arch: aarch64
+    - os: macos-latest-xlarge
+      arch: x86
+    - os: macos-latest-xlarge
+      arch: x64
+---
 name: Continuous Integration
 
 on:
@@ -8,6 +35,8 @@ on:
 
 permissions:
   contents: read
+
+
 
 jobs:
   test-typescript:
@@ -60,3 +89,25 @@ jobs:
       - name: Print Output
         id: output
         run: echo "${{ steps.test-action.outputs.time }}"
+
+  test-concept-gen-matrix:
+    permissions:
+      contents: read  # Required to use `actions/checkout`
+      pull-requests: read
+    outputs:
+      json: ${{ steps.read.outputs.json }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: read
+        run: |
+          echo "json=$(yq eval .matrix -o=json <.github/matrix/concept.yaml | jq -c)" | tee -a "$GITHUB_OUTPUT"
+
+  test-concept:
+    name: Test ${{ matrix.pkg.name }} / Julia ${{ matrix.version }} (${{ matrix.os }}, ${{ matrix.arch }})
+    needs: test-concept-gen-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJSON(needs.test-concept-gen-matrix.outputs.json) }}
+    steps:
+      - run: exit 0
