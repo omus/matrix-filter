@@ -10,32 +10,7 @@ on:
 permissions:
   contents: read
 
-.matrix:
-  pkg:
-    - name: Example
-      repo: https://github.com/JuliaLang/Example.jl
-  version:
-    - "1.6"
-    - "1"
-  os:
-    - ubuntu-latest
-    - macos-latest-large
-    - macos-latest-xlarge  # Apple silicon: https://github.blog/2023-10-02-introducing-the-new-apple-silicon-powered-m1-macos-larger-runner-for-github-actions/
-  arch:
-    - x86
-    - x64
-    - aarch64
-  exclude:
-    - os: ubuntu-latest
-      arch: aarch64
-    - os: macos-latest-large
-      arch: x86
-    - os: macos-latest-large
-      arch: aarch64
-    - os: macos-latest-xlarge
-      arch: x86
-    - os: macos-latest-xlarge
-      arch: x64
+
 
 jobs:
   test-typescript:
@@ -97,3 +72,31 @@ jobs:
     #     <<: *matrix
     steps:
       - run: exit 0
+
+---
+.matrix:
+  pkg:
+    - name: Example
+      repo: https://github.com/JuliaLang/Example.jl
+  version:
+    - "1.6"
+    - "1"
+  os:
+    - ubuntu-latest
+    - macos-latest-large
+    - macos-latest-xlarge  # Apple silicon: https://github.blog/2023-10-02-introducing-the-new-apple-silicon-powered-m1-macos-larger-runner-for-github-actions/
+  arch:
+    - x86
+    - x64
+    - aarch64
+  exclude:
+    - os: ubuntu-latest
+      arch: aarch64
+    - os: macos-latest-large
+      arch: x86
+    - os: macos-latest-large
+      arch: aarch64
+    - os: macos-latest-xlarge
+      arch: x86
+    - os: macos-latest-xlarge
+      arch: x64
